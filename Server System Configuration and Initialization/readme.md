@@ -73,3 +73,128 @@ if! crontab -l |grep ntpdate &>/dev/null;
 
 
 ```
+## 2. Disable selinux
+
+- Script writing
+```　　　　　　　　 
+
+sed -i '/SELINUX/{s/permissive/disabled/}' /etc/selinux/config
+
+```
+- Script description
+```　　　　　　　　 
+
+#Stream Editor
+sed
+#Write or modify
+-i
+#Division Keyword
+/SELINUX
+#Replace the value permissive in the /etc/selinux/config file with disabled
+/permissive/disabled/ /etc/selinux/config
+
+#We manually edit and modify the same
+vim /etc/selinux/config
+#Replacement value permissive is disabled
+```
+
+## 3. Turn off the firewall
+
+- Script writing
+
+
+```
+if egrep "7.[0-9]" /etc/redhat-release &>/dev/null; then
+    systemctl stop firewalld
+    systemctl disable firewalld
+elif egrep "6.[0-9]" /etc/redhat-release &>/dev/null; then
+    service iptables stop
+    chkconfig iptables off
+fi
+```　　
+
+- Script description
+```
+This is a centos7 and centos6 2 version firewall script
+First check the system version content in the /etc/redhat-release file, then use regular expressions to distinguish between 7.x or 6.x, then use the pipeline command to filter, and finally, take different branches for different systems
+fi
+```
+
+## 4. History commands show operating time
+
+What command did the current user execute and when
+
+- Script writing
+```
+if ! grep HISTTIMEFORMAT /etc/bashrc; then
+    echo 'export HISTTIMEFORMAT="%F %T `whoami` "' >> /etc/bashrc
+fi
+
+```
+- Script description
+```
+#export HISTTIMEFORMAT Export this variable to the environment variable
+#%F %T Date and time format
+#whoami Current user
+export HISTTIMEFORMAT="%F %T `whoami` "
+
+```
+
+## 5. Prohibit root remote login
+
+- Script writing
+```
+#sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+
+
+```
+- Script description
+```
+This setting must be cautious: before executing this setting, the administrative user must be created in advance, otherwise, the server cannot be logged in. It is recommended to comment this configuration first and change it to yes root to log in.
+Edit the /etc/ssh/sshd_config file and remove the #PermitRootLogin yes comment
+
+```
+
+## 6. Prohibit scheduled tasks to send emails
+
+- Script writing  
+
+When an operation error occurs, the server will send mail regularly. The directory is under /var/mail/, which will increase the number of small files and affect the performance of the server. The above append error is empty, which is also for this purpose.
+
+
+```
+sed -i 's/^MAILTO=root/MAILTO=""/' /etc/crontab
+
+```
+- Script description
+```
+# Edit the /etc/crontab file
+vim /etc/crontab
+#Replacement format
+'s/^
+#Replaced target
+MAILTO=root
+#What is the value after replacement
+MAILTO=""
+
+```
+
+## 4. History commands show operating time
+
+What command did the current user execute and when
+
+- Script writing
+```
+if ! grep HISTTIMEFORMAT /etc/bashrc; then
+    echo 'export HISTTIMEFORMAT="%F %T `whoami` "' >> /etc/bashrc
+fi
+
+```
+- Script description
+```
+#export HISTTIMEFORMAT Export this variable to the environment variable
+#%F %T Date and time format
+#whoami Current user
+export HISTTIMEFORMAT="%F %T `whoami` "
+
+```
