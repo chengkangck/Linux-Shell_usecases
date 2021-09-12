@@ -157,6 +157,8 @@ Edit the /etc/ssh/sshd_config file and remove the #PermitRootLogin yes comment
 
 ## 6. Prohibit scheduled tasks to send emails
 
+
+
 - Script writing  
 
 When an operation error occurs, the server will send mail regularly. The directory is under /var/mail/, which will increase the number of small files and affect the performance of the server. The above append error is empty, which is also for this purpose.
@@ -168,7 +170,7 @@ sed -i 's/^MAILTO=root/MAILTO=""/' /etc/crontab
 ```
 - Script description
 ```
-# Edit the /etc/crontab file
+#Edit the /etc/crontab file
 vim /etc/crontab
 #Replacement format
 's/^
@@ -179,22 +181,110 @@ MAILTO=""
 
 ```
 
-## 4. History commands show operating time
+## 7. Set the maximum number of open files
 
-What command did the current user execute and when
 
 - Script writing
 ```
-if ! grep HISTTIMEFORMAT /etc/bashrc; then
-    echo 'export HISTTIMEFORMAT="%F %T `whoami` "' >> /etc/bashrc
+if ! grep "* soft nofile 65535" /etc/security/limits.conf &>/dev/null; then
+cat >> /etc/security/limits.conf << EOF
+    * soft nofile 65535
+    * hard nofile 65535
+EOF
 fi
 
 ```
 - Script description
 ```
-#export HISTTIMEFORMAT Export this variable to the environment variable
-#%F %T Date and time format
-#whoami Current user
-export HISTTIMEFORMAT="%F %T `whoami` "
+#* The scope of the domain, * means all
+#soft type There are two kinds of soft and hard
+#nofile Indicates the maximum number of open files
+#65535 Maximum number of files
+
+* soft nofile 65535
+
+#In simple terms
+#Just edit the file /etc/security/limits.conf to append these 2 lines
+
+```
+
+## 8. Less Swap use
+
+- Script writing
+```
+echo "0" > /proc/sys/vm/swappiness
+```
+- Script description
+```
+Edit the /proc/sys/vm/swappiness file to modify the value
+
+```
+
+## 9. System kernel parameter optimization
+
+
+- Script writing
+```
+cat >> /etc/sysctl.conf << EOF
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_max_tw_buckets = 20480
+net.ipv4.tcp_max_syn_backlog = 20480
+net.core.netdev_max_backlog = 262144
+net.ipv4.tcp_fin_timeout = 20  
+EOF
+
+
+```
+- Script description
+```
+Edit the /etc/sysctl.conf file and append the following parameters
+
+#A protection mechanism strategy when tcp overflows
+net.ipv4.tcp_syncookies = 1
+#Maximum queue length
+net.ipv4.tcp_max_tw_buckets = 20480
+#Maximum column length for receiving syn
+net.ipv4.tcp_max_syn_backlog = 20480
+#The maximum queue length of the network card
+net.core.netdev_max_backlog = 262144
+#Timeout settings
+net.ipv4.tcp_fin_timeout = 20
+
+```
+```
+#View system default parameters
+[root@ly-01 mail]# sysctl -a |grep syn_ba
+
+```
+## 10. Install system performance analysis tools and others
+
+- Script writing
+```
+yum install gcc make autoconf vim sysstat wget unzip  net-tools iostat iftop iotp lrzsz -y
+
+
+```
+- Script description
+```
+Insert code snippet here
+
+```
+
+## 11. SSH timeout
+Used for the timeout period after our ssh login: you log in to the server through ssh, and you have not done any operation for a certain period of time
+Setting the timeout time is safe
+
+- Script writing
+```
+if ! grep "TMOUT=600" /etc/profile &>/dev/null; then
+    echo "export TMOUT=600" >> /etc/profile
+fi
+
+
+```
+- Script description
+```
+#Append this variable to the configuration file of system environment variables
+echo "export TMOUT=600" >> /etc/profile
 
 ```
