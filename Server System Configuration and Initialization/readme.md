@@ -103,15 +103,8 @@ vim /etc/selinux/config
 - Script writing
 
 
-```
-if egrep "7.[0-9]" /etc/redhat-release &>/dev/null; then
-    systemctl stop firewalld
-    systemctl disable firewalld
-elif egrep "6.[0-9]" /etc/redhat-release &>/dev/null; then
-    service iptables stop
-    chkconfig iptables off
-fi
-```　　
+
+
 
 
 
