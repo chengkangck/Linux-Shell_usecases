@@ -284,3 +284,76 @@ fi
 echo "export TMOUT=600" >> /etc/profile
 
 ```
+# script integration + executable permissions
+
+## All script integration versions
+
+```
+#Create a directory for storing scripts
+mkdir shell_scripts
+#Create script file
+vim 1.sh
+#Paste the following content
+
+```
+
+```
+#/bin/bash
+# Set time zone and synchronize time
+ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+if! crontab -l |grep ntpdate &>/dev/null; then
+    (echo "* 1 * * * ntpdate ntp1.aliyun.com >/dev/null 2>&1";hwclock -w;crontab -l) |crontab
+fi
+
+# Disable selinux
+sed -i'/SELINUX/{s/permissive/disabled/}' /etc/selinux/config
+
+# Turn off the firewall
+if egrep "7.[0-9]" /etc/redhat-release &>/dev/null; then
+    systemctl stop firewalld
+    systemctl disable firewalld
+elif egrep "6.[0-9]" /etc/redhat-release &>/dev/null; then
+    service iptables stop
+    chkconfig iptables off
+fi
+
+# History command shows operating time
+if! grep HISTTIMEFORMAT /etc/bashrc; then
+    echo'export HISTTIMEFORMAT="%F %T `whoami` "'>> /etc/bashrc
+fi
+
+# SSH timeout
+if! grep "TMOUT=600" /etc/profile &>/dev/null; then
+    echo "export TMOUT=600" >> /etc/profile
+fi
+
+# Prohibit root remote login
+#sed -i's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+
+# Prohibit scheduled tasks to send emails
+sed -i's/^MAILTO=root/MAILTO=""/' /etc/crontab
+
+# Set the maximum number of open files
+if! grep "* soft nofile 65535" /etc/security/limits.conf &>/dev/null; then
+cat >> /etc/security/limits.conf << EOF
+    * soft nofile 65535
+    * hard nofile 65535
+EOF
+fi
+
+# System kernel optimization
+cat >> /etc/sysctl.conf << EOF
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_max_tw_buckets = 20480
+net.ipv4.tcp_max_syn_backlog = 20480
+net.core.netdev_max_backlog = 262144
+net.ipv4.tcp_fin_timeout = 20
+EOF
+
+# Reduce SWAP usage
+echo "0"> /proc/sys/vm/swappiness
+
+# Install system performance analysis tools and others
+yum install gcc make autoconf vim sysstat wget unzip net-tools iostat iftop iotp lrzsz -y
+
+```
