@@ -12,6 +12,13 @@ Enterprise requirements realization process:
   2. Set a password for the user
 ```
 1. Add users
+```　　　　　　　　 
+
+#Create a user named zs
+useradd zs
+```
+
+
 2. Set a password for the user
 
 # Enterprise requirements realization process
