@@ -28,7 +28,7 @@ fi
 
 ```
 
-- Script description
+- Script description  
 View system information
 ```　　　　　　　　 
 
