@@ -114,6 +114,8 @@ fi
 ```　　
 
 - Script description
+
+
 ```
 This is a centos7 and centos6 2 version firewall script
 First check the system version content in the /etc/redhat-release file, then use regular expressions to distinguish between 7.x or 6.x, then use the pipeline command to filter, and finally, take different branches for different systems
