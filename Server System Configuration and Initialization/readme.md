@@ -275,6 +275,7 @@ Used for the timeout period after our ssh login: you log in to the server throug
 Setting the timeout time is safe
 
 - Script writing
+
 ```
 if ! grep "TMOUT=600" /etc/profile &>/dev/null; then
     echo "export TMOUT=600" >> /etc/profile
@@ -283,6 +284,7 @@ fi
 
 ```
 - Script description
+
 ```
 #Append this variable to the configuration file of system environment variables
 echo "export TMOUT=600" >> /etc/profile
