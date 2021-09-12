@@ -15,3 +15,7 @@
 5. Prohibit root remote login
 ① Script writing
 ②Script description
+
+
+## 1. Set time zone and synchronize time
+- Script writing
